@@ -29,6 +29,13 @@ void task2_4a() {
     double y = pow(x, 4) - 2 * pow(x, 2) + 1;
     printf("The value of the expression is %.2lf\n", y);
 }
+void task2_4d(){
+    double x;
+    printf("Enter a number: ");
+    scanf("%lf", &x);
+    double y = 16*pow(x, 4) + 8*pow(x, 3) + 4*pow(x, 2) + 2*x + 1;
+    printf("The value of the expression is %.2lf\n", y);
+}
 double distance(double x1, double y1, double x2, double y2) {
     return hypot(x2 - x1, y2 - y1);
 }
@@ -52,6 +59,6 @@ void task2_6(){
     printf("The area of the triangle formed by points A, B, and C is %.2lf\n", triangleArea);
 }
 int main() {
-    task2_6();
+    task2_4d();
     return 0;
 }
