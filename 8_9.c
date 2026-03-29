@@ -10,7 +10,12 @@ int main() {
         return 1;
     }
 
-    double a[n][2 * n];
+    // --- ЗМІНЕНО: Динамічне виділення пам'яті замість VLA ---
+    double **a = malloc(n * sizeof(double *));
+    for (int i = 0; i < n; i++) {
+        a[i] = malloc(2 * n * sizeof(double));
+    }
+    // ---------------------------------------------------------
 
     printf("Enter matrix elements:\n");
     for (int i = 0; i < n; i++) {
@@ -43,6 +48,12 @@ int main() {
 
         if (fabs(a[i][i]) < 1e-12) {
             printf("Matrix is singular and cannot be inverted.\n");
+            
+            // --- ЗМІНЕНО: Звільняємо пам'ять перед виходом через помилку ---
+            for (int f = 0; f < n; f++) free(a[f]);
+            free(a);
+            // -----------------------------------------------------------------
+            
             return 1;
         }
 
@@ -68,6 +79,13 @@ int main() {
         }
         printf("\n");
     }
+
+    // --- ЗМІНЕНО: Звільняємо пам'ять в кінці програми ---
+    for (int i = 0; i < n; i++) {
+        free(a[i]);
+    }
+    free(a);
+    // ----------------------------------------------------
 
     return 0;
 }
