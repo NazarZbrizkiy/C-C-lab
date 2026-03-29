@@ -1,255 +1,148 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-
-typedef struct {
-    int day;
-    int month;
-    int year;
-} Date;
-
-typedef struct {
-    char col;
-    int row;
-} ChessSquare;
-
-typedef struct {
-    double x;
-    double y;
-} Point;
-
-typedef struct {
-    Point p1;
-    Point p2;
-} Rectangle;
-
-typedef struct {
-    int degree;
-    double *coeffs;
-} Polynomial;
-
-typedef struct {
-    int numerator;
-    unsigned int denominator;
-} Rational;
-
-void inputDate(Date *d) {
-    scanf("%d %d %d", &d->day, &d->month, &d->year);
-}
-
-void printDate(Date d) {
-    printf("%02d/%02d/%04d\n", d.day, d.month, d.year);
-}
-
-void inputChessSquare(ChessSquare *s) {
-    scanf(" %c%d", &s->col, &s->row);
-}
-
-void printChessSquare(ChessSquare s) {
-    printf("%c%d\n", s.col, s.row);
-}
-
-void inputRectangle(Rectangle *r) {
-    scanf("%lf %lf %lf %lf", &r->p1.x, &r->p1.y, &r->p2.x, &r->p2.y);
-}
-
-void printRectangle(Rectangle r) {
-    printf("[(%.2f, %.2f), (%.2f, %.2f)]\n", r.p1.x, r.p1.y, r.p2.x, r.p2.y);
-}
-
-void inputRational(Rational *r) {
-    scanf("%d %u", &r->numerator, &r->denominator);
-}
-
-void printPolynomial(Polynomial p) {
-    for (int i = 0; i <= p.degree; i++) {
-        printf("%.2fx^%d ", p.coeffs[i], i);
-        if (i < p.degree) printf("+ ");
-    }
-    printf("\n");
-}
+#include <math.h>
 
 void task1() {
-    printf("--- Task 1 ---\n");
-    
-    Date d;
-    printf("Enter date (dd mm yyyy): ");
-    inputDate(&d);
-    printDate(d);
+    int n;
+    printf("Enter a natural number n: ");
+    if (scanf("%d", &n) != 1 || n <= 0) return;
 
-    ChessSquare s;
-    printf("Enter chess square (e.g. e4): ");
-    inputChessSquare(&s);
-    printChessSquare(s);
+    double *arr = (double*)malloc(n * sizeof(double));
+    double sum_of_squares = 0.0;
 
-    Rectangle r;
-    printf("Enter rectangle coordinates (x1 y1 x2 y2): ");
-    inputRectangle(&r);
-    printRectangle(r);
-
-    Polynomial p;
-    printf("Enter polynomial degree: ");
-    scanf("%d", &p.degree);
-    p.coeffs = (double *)malloc((p.degree + 1) * sizeof(double));
-    printf("Enter %d coefficients: ", p.degree + 1);
-    for (int i = 0; i <= p.degree; i++) {
-        scanf("%lf", &p.coeffs[i]);
+    printf("Enter %d real numbers:\n", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%lf", &arr[i]);
+        sum_of_squares += arr[i] * arr[i];
     }
-    printPolynomial(p);
-    free(p.coeffs);
-    printf("\n");
-}
 
-bool checkQueen(ChessSquare start, ChessSquare end) {
-    int dCol = abs(start.col - end.col);
-    int dRow = abs(start.row - end.row);
-    return (dCol == 0) || (dRow == 0) || (dCol == dRow);
+    printf("Sum of squares: %lf\n", sum_of_squares);
+    free(arr);
 }
 
 void task2() {
-    printf("--- Task 2 ---\n");
-    ChessSquare s1, s2;
-    printf("Enter start chess square: ");
-    inputChessSquare(&s1);
-    printf("Enter end chess square: ");
-    inputChessSquare(&s2);
-    
-    printf("Can queen move? %s\n", checkQueen(s1, s2) ? "Yes" : "No");
-    printf("\n");
-}
+    int arr[100];
+    int count = 0;
+    int num;
 
-int isLeap(int year) {
-    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-}
+    printf("Enter integers (enter 0 to stop, max 100):\n");
+    while (count < 100) {
+        scanf("%d", &num);
+        if (num == 0) break;
+        arr[count++] = num;
+    }
 
-int daysInMonth(int month, int year) {
-    if (month == 2) return isLeap(year) ? 29 : 28;
-    if (month == 4 || month == 6 || month == 9 || month == 11) return 30;
-    return 31;
-}
+    int squares = 0;
+    int cubes = 0;
 
-Date getTomorrow(Date d) {
-    d.day++;
-    if (d.day > daysInMonth(d.month, d.year)) {
-        d.day = 1;
-        d.month++;
-        if (d.month > 12) {
-            d.month = 1;
-            d.year++;
+    for (int i = 0; i < count; i++) {
+        if (arr[i] > 0) {
+            int sq_root = (int)round(sqrt(arr[i]));
+            if (sq_root * sq_root == arr[i]) squares++;
         }
+        
+        int cb_root = (int)round(cbrt(arr[i]));
+        if (cb_root * cb_root * cb_root == arr[i]) cubes++;
     }
-    return d;
+
+    printf("Total elements: %d\n", count);
+    printf("Perfect squares count: %d\n", squares);
+    printf("Perfect cubes count: %d\n", cubes);
 }
 
-void printDayOfWeek(Date d) {
-    int q = d.day;
-    int m = d.month;
-    int y = d.year;
-    if (m == 1 || m == 2) {
-        m += 12;
-        y--;
+double* create_vector(int n) {
+    double* v = (double*)malloc(n * sizeof(double));
+    printf("Enter %d elements for the vector:\n", n);
+    for (int i = 0; i < n; i++) {
+        scanf("%lf", &v[i]);
     }
-    int k = y % 100;
-    int j = y / 100;
-    int h = (q + 13 * (m + 1) / 5 + k + k / 4 + j / 4 + 5 * j) % 7;
+    return v;
+}
 
-    const char* days[] = {"Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
-    printf("Day of week: %s\n", days[h]);
+void free_vector(double* v) {
+    free(v);
 }
 
 void task3() {
-    printf("--- Task 3 ---\n");
-    Date today;
-    printf("Enter today's date (dd mm yyyy): ");
-    inputDate(&today);
+    int n1, n2;
 
-    Date tomorrow = getTomorrow(today);
-    printf("Tomorrow is: ");
-    printDate(tomorrow);
+    printf("Enter the size of the first vector: ");
+    scanf("%d", &n1);
+    double* v1 = create_vector(n1);
 
-    printDayOfWeek(today);
-    printf("\n");
-}
+    printf("Enter the size of the second vector: ");
+    scanf("%d", &n2);
+    double* v2 = create_vector(n2);
 
-int gcd(int a, int b) {
-    a = abs(a);
-    b = abs(b);
-    while (b != 0) {
-        int temp = b;
-        b = a % b;
-        a = temp;
+    if (n1 == n2) {
+        double* result = (double*)malloc(n1 * sizeof(double));
+        printf("Difference vector:\n");
+        for (int i = 0; i < n1; i++) {
+            result[i] = v1[i] - v2[i];
+            printf("%lf ", result[i]);
+        }
+        printf("\n");
+        free_vector(result);
+    } else {
+        printf("Error: Vectors must have the same size to compute difference.\n");
     }
-    return a;
+
+    free_vector(v1);
+    free_vector(v2);
 }
 
-void reduceRational(Rational *r) {
-    if (r->numerator == 0) {
-        r->denominator = 1;
-        return;
+double** create_matrix(int n) {
+    double** m = (double**)malloc(n * sizeof(double*));
+    for (int i = 0; i < n; i++) {
+        m[i] = (double*)calloc(n, sizeof(double));
     }
-    int g = gcd(r->numerator, r->denominator);
-    r->numerator /= g;
-    r->denominator /= g;
+    return m;
 }
 
-Rational addRational(Rational r1, Rational r2) {
-    Rational res;
-    res.numerator = r1.numerator * r2.denominator + r2.numerator * r1.denominator;
-    res.denominator = r1.denominator * r2.denominator;
-    reduceRational(&res);
-    return res;
+void input_matrix(double** m, int n) {
+    printf("Enter elements for the %dx%d matrix:\n", n, n);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%lf", &m[i][j]);
+        }
+    }
 }
 
-Rational multRational(Rational r1, Rational r2) {
-    Rational res;
-    res.numerator = r1.numerator * r2.numerator;
-    res.denominator = r1.denominator * r2.denominator;
-    reduceRational(&res);
-    return res;
-}
-
-int compRational(Rational r1, Rational r2) {
-    long long left = (long long)r1.numerator * r2.denominator;
-    long long right = (long long)r2.numerator * r1.denominator;
-    if (left < right) return -1;
-    if (left > right) return 1;
-    return 0;
-}
-
-void printRational(Rational r) {
-    printf("%d/%u\n", r.numerator, r.denominator);
+void free_matrix(double** m, int n) {
+    for (int i = 0; i < n; i++) {
+        free(m[i]);
+    }
+    free(m);
 }
 
 void task4() {
-    printf("--- Task 4 ---\n");
-    Rational r1, r2, r3;
-    
-    printf("Enter first rational number (numerator denominator): ");
-    inputRational(&r1);
-    
-    printf("Enter second rational number (numerator denominator): ");
-    inputRational(&r2);
+    int n;
+    printf("Enter the dimension n for square matrices: ");
+    scanf("%d", &n);
 
-    Rational sum = addRational(r1, r2);
-    printf("Sum: ");
-    printRational(sum);
+    double** matrix1 = create_matrix(n);
+    input_matrix(matrix1, n);
 
-    Rational prod = multRational(r1, r2);
-    printf("Product: ");
-    printRational(prod);
+    double** matrix2 = create_matrix(n);
+    input_matrix(matrix2, n);
 
-    int cmp = compRational(r1, r2);
-    printf("Comparison result (-1 if <, 1 if >, 0 if ==): %d\n", cmp);
+    double** result_matrix = create_matrix(n);
+    printf("Sum of the two matrices:\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            result_matrix[i][j] = matrix1[i][j] + matrix2[i][j];
+            printf("%lf ", result_matrix[i][j]);
+        }
+        printf("\n");
+    }
 
-    printf("Enter a rational number to reduce (numerator denominator): ");
-    inputRational(&r3);
-    reduceRational(&r3);
-    printf("Reduced form: ");
-    printRational(r3);
-    printf("\n");
+    free_matrix(matrix1, n);
+    free_matrix(matrix2, n);
+    free_matrix(result_matrix, n);
 }
 
 int main() {
     task1();
+
     return 0;
 }
